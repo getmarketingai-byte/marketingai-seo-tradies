@@ -319,7 +319,7 @@
 </header>
 
 <div class="hero">
-  <h1>Marketing for Tradies and Construction Businesses</h1>
+  <h1>Marketing for Tradies and Construction Businesses — What Actually Works</h1>
   <p>Practical strategies for plumbers, electricians, builders, and other trades who want consistent work — without relying on word of mouth alone.</p>
 </div>
 
@@ -365,7 +365,7 @@
 
   <p>A tradie website doesn't need to be complex. It needs to be:</p>
   <ul>
-    <li><strong>Specific about what you do and where you do it.</strong> "Plumbing services in [your city's north side]" is better than "plumbing services across [your region]."</li>
+    <li><strong>Specific about what you do and where you do it.</strong> "Plumbing services in [your suburb]" is better than "plumbing services across [your region]."</li>
     <li><strong>Full of photos of your actual work.</strong> Before and after, completed jobs, your team on site. Real photos beat stock images every time.</li>
     <li><strong>Easy to contact.</strong> A phone number at the top of every page, a quote request form, and ideally a booking link.</li>
     <li><strong>Review-forward.</strong> Embed your Google reviews directly on the site.</li>
@@ -386,7 +386,7 @@
 
   <p>This doesn't need to be elaborate. A short, genuine message that sounds like a person wrote it outperforms any marketing email template.</p>
 
-  <p>One compliance note: Email regulations in your jurisdiction require consent before sending marketing emails. For past clients, ensure you have a record of opt-in or that the communication qualifies as a factual service reminder under applicable exemptions.</p>
+  <p>One compliance note: Email regulations in your jurisdiction typically require consent before sending marketing emails. For past clients, ensure you have a record of opt-in or that the communication qualifies as a transactional service reminder under applicable rules.</p>
 
   <h3>4. Before-and-After Content — Social Proof That Does the Selling</h3>
 
@@ -395,7 +395,7 @@
   <p>Where to use it:</p>
   <ul>
     <li><strong>Google Business Profile</strong> (increases profile engagement and ranking)</li>
-    <li><strong>Facebook</strong> (local community groups are active for trades — "anyone got a good plumber nearby?" posts are common, and a visible Facebook presence means you get recommended)</li>
+    <li><strong>Facebook</strong> (local community groups are active for trades — "anyone got a good plumber in [area]?" posts are common, and a visible Facebook presence means you get recommended)</li>
     <li><strong>Instagram</strong> (particularly for visual trades — builders, landscapers, kitchen renovators)</li>
   </ul>
 
@@ -450,7 +450,7 @@
       <input type="email" id="emailInput" name="fields[email]" placeholder="your@email.com" required>
       <label class="consent-row">
         <input type="checkbox" id="consentCheck" required>
-        <span>I consent to receive marketing emails from MarketingAI. I can unsubscribe at any time. (Required under applicable email regulations)</span>
+        <span>I consent to receive marketing emails from MarketingAI. I can unsubscribe at any time.</span>
       </label>
       <button type="submit">Send Me the Tips</button>
     </form>
@@ -480,26 +480,35 @@
 <script>
   function submitForm(e) {
     e.preventDefault();
-    const email = document.getElementById('emailInput').value;
-    const consent = document.getElementById('consentCheck').checked;
+    var email = document.getElementById('emailInput').value;
+    var consent = document.getElementById('consentCheck').checked;
     if (!email || !consent) return;
 
-    const url = 'https://assets.mailerlite.com/jsonp/2282416/forms/185339817098216933/subscribe';
-    const params = new URLSearchParams({ 'fields[email]': email, 'ml-submit': '1', anticsrf: 'true' });
+    var ENDPOINT = 'https://assets.mailerlite.com/jsonp/2282416/forms/185339817098216933/subscribe';
+    var cb = 'mlcb_' + Date.now();
 
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-      mode: 'no-cors'
-    }).then(() => {
+    window[cb] = function() {
+      delete window[cb];
       document.getElementById('optinForm').style.display = 'none';
       document.getElementById('optinSuccess').style.display = 'block';
-      if (typeof gtag === "function") { gtag("event", "form_submit", {form_id: "early-access", page_title: document.title}); }
-    }).catch(() => {
+    };
+
+    var script = document.createElement('script');
+    script.src = ENDPOINT + '?callback=' + cb + '&fields[email]=' + encodeURIComponent(email) + '&ml-submit=1';
+    script.onerror = function() {
+      delete window[cb];
       document.getElementById('optinForm').style.display = 'none';
       document.getElementById('optinSuccess').style.display = 'block';
-    });
+    };
+    document.head.appendChild(script);
+
+    setTimeout(function() {
+      if (window[cb]) {
+        delete window[cb];
+        document.getElementById('optinForm').style.display = 'none';
+        document.getElementById('optinSuccess').style.display = 'block';
+      }
+    }, 8000);
   }
 </script>
 
